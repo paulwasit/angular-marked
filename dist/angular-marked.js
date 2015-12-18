@@ -291,7 +291,7 @@ angular.module('hc.marked', [])
        </example>
    */
 
-.directive('marked', ['marked', '$templateRequest', function (marked, $templateRequest) {
+.directive('marked', ['marked', '$templateRequest', '$timeout', function (marked, $templateRequest, $timeout) {
   return {
     restrict: 'AE',
     replace: true,
@@ -331,7 +331,6 @@ angular.module('hc.marked', [])
           if (l === line.length) { continue; }
           min = (l < min || min === null) ? l : min;
         }
-
         if (min !== null && min > 0) {
           for (i = 0; i < len; i++) {
             lines[i] = lines[i].substr(min);
@@ -342,7 +341,9 @@ angular.module('hc.marked', [])
 
       function set (text) {
         text = unindent(text || '');
-        element.html(marked(text, scope.opts || null));
+        $timeout(function () {
+          element.html(marked(text, scope.opts || null));
+        });
       }
     }
   };

@@ -56,10 +56,11 @@ describe('Directive: marked,', function () {
 
   var $scope,
     // $httpBackend,
+    $timeout,
     $compile,
     markdown, html;
 
-  beforeEach(inject(function ($rootScope, $templateCache, _$compile_) {
+  beforeEach(inject(function ($rootScope, $templateCache, _$compile_, _$timeout_) {
     $scope = $rootScope.$new();
 
     $scope.markdown = markdown = [
@@ -75,6 +76,7 @@ describe('Directive: marked,', function () {
 
     $scope.file = 'file.md';
     $compile = _$compile_;
+    $timeout = _$timeout_;
 
     $templateCache.put($scope.file, markdown);
   }));
@@ -82,6 +84,7 @@ describe('Directive: marked,', function () {
   describe('Include', function () {
     it('should convert file', function () {
       var element = $compile('<div><div marked src="file">JUNK</div></div>')($scope);
+      $timeout.flush();
       $scope.$digest();
       expect(element.html()).toContain(html);
       expect(element.html()).toNotContain('JUNK');
@@ -89,6 +92,7 @@ describe('Directive: marked,', function () {
 
     it('should convert file', function () {
       var element = $compile('<div><div marked src="\'file.md\'">JUNK</div></div>')($scope);
+      $timeout.flush();
       $scope.$digest();
       expect(element.html()).toContain(html);
       expect(element.html()).toNotContain('JUNK');
@@ -98,37 +102,44 @@ describe('Directive: marked,', function () {
   describe('Element,', function () {
     it('should convert markdown', function () {
       var element = $compile('<marked>## Element</marked>')($scope);
+      $timeout.flush();
       expect(element.html()).toContain('<h2 id="element">Element</h2>');
     });
 
     it('should convert markdown', function () {
       var element = $compile('<marked>**test**</marked>')($scope);
+      $timeout.flush();
       expect(element.html()).toContain('<p><strong>test</strong></p>');
     });
 
     it('should convert markdown', function () {
       var element = $compile('<marked>`test`</marked>')($scope);
+      $timeout.flush();
       expect(element.html()).toContain('<p><code>test</code></p>');
     });
 
     it('should unindent', function () {
       var element = $compile('<marked>    **test**\n    1 2 3</marked>')($scope);
+      $timeout.flush();
       expect(element.html()).toContain('<p><strong>test</strong>\n1 2 3</p>');
     });
 
     it('should unindent based on shorted whitespace', function () {
       var element = $compile('<marked>    **test**\n  1 2 3</marked>')($scope);
+      $timeout.flush();
       expect(element.html()).toContain('<p>  <strong>test</strong>\n1 2 3</p>');
     });
 
     it('should handle crlf', function () {
       var element = $compile('<marked>    **test**\r\n    1 2 3</marked>')($scope);
+      $timeout.flush();
       expect(element.html()).toContain('<p><strong>test</strong>\n1 2 3</p>');
     });
 
     it('should not digest code blocks', function () {
       var element = angular.element('<marked>`Hello {{2 + 3}}`</marked>');
       $compile(element)($scope);
+      $timeout.flush();
       $scope.$digest();
       expect(element.html()).toContain('<code>Hello {{2 + 3}}</code>');
     });
@@ -136,6 +147,7 @@ describe('Directive: marked,', function () {
     xit('should digest non-code blocks', function () {
       var element = angular.element('<marked>## Hello {{2 + 3}}</marked>');
       $compile(element)($scope);
+      $timeout.flush();
       $scope.$digest();
       expect(element.html()).toContain('<h2 id="hello-file-">Hello 5</h2>');
     });
@@ -144,16 +156,19 @@ describe('Directive: marked,', function () {
   describe('Attribute,', function () {
     it('should convert markdown', function () {
       var element = $compile('<div marked>## Attribute</div>')($scope);
+      $timeout.flush();
       expect(element.html()).toContain('<h2 id="attribute">Attribute</h2>');
     });
 
     it('should convert markdown from scope', function () {
       var element = $compile('<div marked="markdown"></div>')($scope);
+      $timeout.flush();
       expect(element.html()).toContain(html);
     });
 
     it('should convert markdown from string', function () {
       var element = $compile('<div marked="\'## String\'"></div>')($scope);
+      $timeout.flush();
       expect(element.html()).toContain('<h2 id="string">String</h2>');
     });
   });
