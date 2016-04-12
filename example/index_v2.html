@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+		
+    <title>angular-marked example</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 20px;
+        font-family: Helvetica, sans-serif;
+        font-size: 14px;
+      }
+    </style>
+    
+		<script src="../bower_components/highlightjs/highlight.pack.js"></script>
+		<link rel="stylesheet" href="../bower_components/highlightjs/styles/default.css">
+		<script>hljs.initHighlightingOnLoad();</script>
+		
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+		
+		<script type="text/x-mathjax-config">
+			MathJax.Hub.Config({
+				tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+			});
+		</script>
+
+		<script type="text/javascript" async
+			src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+		</script>
+		
+		<script src="../bower_components/angular/angular.js"></script>
+		
+    <script src="../bower_components/marked/lib/marked.js"></script>
+    <script src="../dist/angular-marked_v2.js"></script>
+		
+  </head>
+  <body ng-app="example-app" ng-controller="MainController">
+		
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-6">
+					<textarea ng-model="my_markdown" cols="60" rows="5"></textarea>
+				</div>
+				<div class="col-md-6">
+					
+					<marked>
+						#### For example, this:
+						```html
+							&lt;textarea ng-model="my_markdown" cols="60" rows="5">&lt;/textarea>
+							&lt;div marked="my_markdown">&lt;/div>
+						```
+						
+						```html
+							app.config(['markedProvider', function(markedProvider) {
+								markedProvider.setOptions({gfm: true});
+							}]);
+						```
+						```js
+							app.config(['markedProvider', function(markedProvider) {
+								markedProvider.setOptions({gfm: true});
+							}]);
+						```
+						
+						$\mu_0 = 10$
+							
+					</marked>
+					
+					<div marked="my_markdown"></div>
+				</div>
+			</div>
+		</div>
+		
+  </body>
+
+  <script>
+    angular.module('example-app', ['hc.marked'])
+    .config(['markedProvider', function(markedProvider) {
+			markedProvider.setOptions({
+				sanitize: true,
+				gfm: true,
+				tables: true,
+				highlight: function (code, lang) {
+					if (lang) {
+						return hljs.highlight(lang, code, true).value;
+					} else {
+						return hljs.highlightAuto(code).value;
+					}
+				}
+			});
+    }])
+    .controller('MainController', ['$scope', function($scope) {
+      $scope.my_markdown = "*this is ok* $$\\mu$$";
+    }]);
+  </script>
+</html>
